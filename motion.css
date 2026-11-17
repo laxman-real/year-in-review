@@ -1,0 +1,135 @@
+/* Year in Review: cover motion. An entrance of about 2 s, then a gentle loop.
+   Uses the separate translate / rotate / scale properties so layout transforms in slides.css stay intact.
+   Click a cover to replay it (index.html). Reduced-motion viewers get the still cover. */
+
+@keyframes yir-up      { from { translate: 0 70px; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@keyframes yir-fade    { from { opacity: 0; } }
+@keyframes yir-left    { from { translate: 140px 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@keyframes yir-down    { from { translate: 0 -260px; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@keyframes yir-pop     { 0% { scale: 0; opacity: 0; } 70% { scale: 1.08; opacity: 1; } 100% { scale: 1; } }
+@keyframes yir-wipe    { from { clip-path: inset(100% 0 0 0); translate: 0 50px; } to { clip-path: inset(0 0 0 0); translate: 0 0; } }
+@keyframes yir-spinin  { from { rotate: -50deg; scale: .4; opacity: 0; } to { rotate: 0deg; scale: 1; opacity: 1; } }
+@keyframes yir-spin    { to { rotate: 360deg; } }
+@keyframes yir-float1  { 0%, 100% { translate: 0 0; } 50% { translate: 60px -40px; } }
+@keyframes yir-float2  { 0%, 100% { translate: 0 0; } 50% { translate: -70px 50px; } }
+@keyframes yir-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.08; } }
+@keyframes yir-twinkle { 0%, 100% { scale: 1; rotate: 0deg; } 50% { scale: .7; rotate: 45deg; } }
+@keyframes yir-blink   { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+@keyframes yir-drop    { 0% { translate: 0 -160px; opacity: 0; } 70% { translate: 0 10px; opacity: 1; } 100% { translate: 0 0; } }
+@keyframes yir-punch   { 0% { scale: 1.25; opacity: 0; text-shadow: none; } 60% { scale: .97; opacity: 1; } 100% { scale: 1; } }
+@keyframes yir-echo    { from { translate: -40px -46px; opacity: 0; } }
+@keyframes yir-rule    { from { scale: 0 1; } }
+@keyframes yir-flow    { 0%, 100% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } }
+@keyframes yir-settle  { from { scale: .9; opacity: 0; } to { scale: 1; opacity: 1; } }
+
+.slide .abs, .slide .cell, .slide .tag, .slide .panel img { animation-fill-mode: both; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+
+/* P1 Poster */
+.c-p2 .burst  { transform-origin: 560px 760px; animation: yir-spinin 1.3s cubic-bezier(.2,.8,.2,1) both; }
+.c-p2 .person { animation: yir-up 1.1s .25s both; }
+.c-p2 .shade  { animation: yir-fade 1s .2s both; }
+.c-p2 .headline { animation: yir-left .9s .55s both; }
+.c-p2 .who    { animation: yir-wipe .8s .8s both; }
+.c-p2 .cell   { animation: yir-up .7s both; }
+.c-p2 .c1 { animation-delay: 1.05s; } .c-p2 .c2 { animation-delay: 1.18s; } .c-p2 .c3 { animation-delay: 1.31s; }
+.c-p2 .sq     { animation: yir-fade .8s 1.4s both; }
+.c-p2 .logo, .c-p2 .grid { animation: yir-fade .8s both; }
+.c-p2 .np-year { animation: yir-pop 1s .4s both; }
+
+/* G1 Glow */
+.c-g .g1 { animation: yir-fade 1.2s both; }
+.c-g .g2 { animation: yir-fade 1.2s both; }
+.c-g .g3 { animation: yir-fade 1.2s both; }
+.c-g .g4 { animation: yir-fade 1.2s both; }
+.c-g .person { animation: yir-left 1.2s .2s both; }
+.c-g .tags .tag { animation: yir-pop .6s both; }
+.c-g .tags .tag:nth-child(1) { animation-delay: .7s; } .c-g .tags .tag:nth-child(2) { animation-delay: .82s; }
+.c-g .nm  { animation: yir-wipe .9s .9s both; }
+.c-g .sub { animation: yir-fade .8s 1.4s both; }
+.c-g .swipe, .c-g .logo { animation: yir-fade .8s 1.6s both; }
+.c-g .big-year { animation: yir-up 1s .3s both; }
+
+/* V4 Wrapped */
+.c-w .ring  { animation: yir-fade 1.4s both; }
+.c-w .photo { animation: yir-fade .8s .6s both; }
+.c-w .bite  { animation: yir-fade .5s both; }
+.c-w .bite:nth-of-type(3) { animation-delay: .15s; } .c-w .bite:nth-of-type(4) { animation-delay: .25s; }
+.c-w .bite:nth-of-type(5) { animation-delay: .35s; } .c-w .bite:nth-of-type(6) { animation-delay: .45s; } .c-w .bite:nth-of-type(7) { animation-delay: .55s; }
+.c-w .spark { animation: yir-fade .6s .6s both; }
+.c-w .sticker { animation: yir-drop .8s .7s both; }
+.c-w .num   { animation: yir-punch .9s 1s both; }
+.c-w .num.echo { animation: yir-fade .8s 1.3s both; }
+.c-w .chip  { animation: yir-left .7s 1.5s both; }
+.c-w .rule  { transform-origin: 0 50%; animation: yir-rule .9s 1.6s both; }
+.c-w .left, .c-w .rt { animation: yir-up .7s 1.8s both; }
+
+/* V6 Glow word */
+.c-f .a { animation: yir-fade 1s both; }
+.c-f .b { animation: yir-fade 1s both; }
+.c-f .c { animation: yir-fade 1s both; }
+.c-f .blobsvg { animation: yir-fade 1.2s both; }
+.c-f .vword { animation: yir-fade 1.3s .2s both; }
+.c-f .person { animation: yir-up 1.2s .4s both; }
+.c-f .title { animation: yir-wipe .9s .9s both; }
+.c-f .sub   { animation: yir-fade .8s 1.3s both; }
+.c-f .info, .c-f .logo { animation: yir-fade .8s 1.5s both; }
+
+/* V7 Frame */
+.c-n { background-size: 220% 220%; animation: yir-flow 10s ease-in-out infinite; }
+.c-n .panel { animation: yir-fade 1s both; }
+.c-n .panel img { animation: yir-up 1.1s .35s both; }
+.c-n .tr { animation: yir-fade .9s .6s both; }
+.c-n .st { animation: yir-fade .8s both; }
+.c-n .s1 { animation-delay: .9s; } .c-n .s2 { animation-delay: 1.05s; } .c-n .s3 { animation-delay: 1.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide, .slide * { animation: none !important; }
+}
+
+/* Ideas set entrances (live.js keeps them moving) */
+.x8 .d, .x9 .d, .x10 .d, .x10 .d34 { animation: yir-up .9s both; }
+.x8 .d1, .x9 .d1, .x10 .d1 { animation-delay: .2s; } .x8 .d2, .x10 .d34 { animation-delay: .35s; } .x8 .d3, .x9 .d3 { animation-delay: .5s; } .x8 .d4, .x9 .d4 { animation-delay: .65s; }
+.x9 .ring9, .x10 .circ { animation: yir-fade .9s .3s both; }
+.x8 .pill8, .x8 .vtext { animation: yir-fade .8s 1s both; }
+.x11 .iso { animation: yir-fade 1s both; } .x11 .head11 { animation: yir-up .8s .4s both; } .x11 .tagline { animation: yir-fade .8s .8s both; }
+.x12 .h12 { animation: yir-wipe .9s .2s both; } .x12 .sub12 { animation: yir-fade .8s .7s both; }
+.x12 .riser, .x12 .riser-y { animation: yir-up 1.1s .5s both; }
+
+/* Inner pages: entrances */
+.ip4 .lbl, .ip4 .pgn { animation: yir-up .7s 1.4s both; }
+.ip1 .val { animation: yir-wipe .9s .5s both; } .ip1 .lbl { animation: yir-fade .8s 1s both; } .ip1 .shade2 { animation: yir-fade .6s both; }
+.ip3 .note3 { animation: yir-fade .8s 1.5s both; }
+
+.ip4 .div4 { transform-origin: 0 50%; animation: yir-rule .8s 1.6s both; }
+
+.ip4 .gfx { animation: yir-settle .9s .2s both; }
+
+.ip4 .ill { animation: yir-settle 1s .2s both; } .ip4 .illglow { animation: yir-fade 1.2s both; }
+
+.ip3 .g-ill, .ip3 .g-person { animation: yir-up 1s .2s both; }
+
+.ip1 .ir { animation: yir-up 1s .2s both; }
+
+/* Z1 entrances */
+.c-z .zglass { animation: yir-up .9s .5s both; }
+.c-z .zorb, .c-z .zring, .zp .zfield, .zs .ztop { animation: yir-fade 1.2s both; }
+.zs .zpanel > * { animation: yir-up .8s .6s both; }
+.zp .zp2 { animation-delay: .65s; } .zp .zp3 { animation-delay: .8s; }
+
+/* Z1 line art draws itself in */
+.za .zart path, .za .zart rect, .za .zart circle, .za .zart ellipse { stroke-dasharray: 600; stroke-dashoffset: 600; animation: yir-draw 2.2s .2s cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes yir-draw { to { stroke-dashoffset: 0; } }
+.za .zbig, .za .zlbl2 { animation: yir-up .8s .5s both; } .za .znote2, .za .zkick2 { animation: yir-fade .8s .8s both; }
+@media (prefers-reduced-motion: reduce) { .za .zart * { stroke-dashoffset: 0 !important; } }
+
+.za .zhand { animation: yir-up .9s .2s both; }
+
+.za .zfull { animation: yir-fade 1s both; }
+
+/* N1 entrances */
+.c-n1 .nstat, .c-n1 .nyear { animation: yir-wipe 1s .25s both; }
+.c-n1 .nlbl, .c-n1 .ntitle { animation: yir-up .8s .6s both; }
+.c-n1 .nnote { animation: yir-fade .8s .9s both; }
+.c-n1 .nfig { animation: yir-up 1.1s .3s both; }
+.c-n1 .nbar i { animation: yir-fade .4s both; }
+.c-n1 .nbar i:nth-child(n) { animation-delay: calc(.8s + var(--d, 0s)); }

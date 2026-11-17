@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Year in Review</title>
+<link rel="stylesheet" href="tokens.css">
+<script src="clock.js"></script>
+<script src="content.js"></script>
+<link rel="stylesheet" href="slides.css">
+<link rel="stylesheet" href="remax.css">
+<link rel="stylesheet" href="motion.css">
+<script src="live.js" defer></script>
+<script src="pages.js"></script>
+<script src="grain.js"></script>
+<script src="rings.js"></script>
+<script src="flip.js" defer></script>
+<script src="mock.js" defer></script>
+<script src="reel.js" defer></script>
+<script src="figma-sheet.js" defer></script>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: #e9ecf2; font-family: var(--font-body); color: var(--onyx); }
+
+  /* One page at a time (picked in the Kamui bar). Its versions sit side by side; scroll sideways for more. */
+  .stage { height: 100vh; padding: 64px 48px 32px; display: flex; flex-direction: column; gap: 16px; }
+  .page-title { font: 400 14px/1 var(--font-body); color: #5b6478; }
+  .page-title b { color: var(--navy); font-weight: 400; }
+  /* Desktop: 3 by 3 grid, scroll down. Phones keep the swipe row (media query below). */
+  .row { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, max-content); justify-content: center; gap: 36px 32px; overflow-y: auto; overflow-x: hidden; padding: 4px 0 40px; align-content: start; }
+  .version { flex: none; display: flex; flex-direction: column; gap: 10px; }
+  .version-label { font: 400 12px/1 var(--font-body); color: #5b6478; letter-spacing: .02em; }
+  .frame { width: calc(var(--slide-w) * var(--scale)); height: calc(var(--slide-h) * var(--scale)); overflow: hidden; }
+  .slide { width: var(--slide-w); height: var(--slide-h); transform: scale(var(--scale)); transform-origin: 0 0;
+           position: relative; overflow: hidden; padding: var(--margin); }
+
+  /* Placeholder until a page has a design */
+  .slide.empty { background: var(--light); display: flex; flex-direction: column; justify-content: space-between; }
+  .slide.empty .num { font: 300 240px/0.9 var(--font-display); color: var(--rezen); }
+  .slide.empty .copy { display: flex; flex-direction: column; gap: 20px; color: var(--navy); }
+  .slide.empty .k { font: 400 28px/1 var(--font-body); text-transform: uppercase; letter-spacing: .14em; color: var(--rezen); }
+  .slide.empty .v { font: 400 160px/0.95 var(--font-display); }
+  .slide.empty .l { font: 400 56px/1.1 var(--font-display); }
+  .slide.empty .n { font: 400 32px/1.3 var(--font-body); color: var(--onyx); }
+
+  /* Own toolbar: page select, photo switch. Shown on phones and anywhere the Kamui bar isn't (not localhost). */
+  .bar { display: none; align-items: center; gap: 8px; padding: 0 16px; }
+  .bar button, .bar select { height: 40px; border: 1px solid #c9cfdb; background: var(--white); color: var(--navy);
+    font: 400 15px/1 var(--font-body); border-radius: 0; -webkit-appearance: none; appearance: none; }
+  .bar button { width: 40px; flex: none; font-size: 18px; }
+  .bar select { flex: 1; min-width: 0; padding: 0 12px; }
+  .bar .photo { width: auto; padding: 0 12px; white-space: nowrap; }
+  .bar .photo[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+  .page-title .back { margin-right: 10px; padding: 6px 12px; border: 1px solid #c9cfdb; background: #fff; color: #050e3d; font: 400 13px/1 var(--font-body); cursor: pointer; }
+  .version.open { cursor: pointer; }
+  .version.open .frame { transition: transform .2s ease, box-shadow .2s ease; }
+  .version.open:hover .frame { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(5,14,61,.18); }
+  .dots { display: none; justify-content: center; align-items: center; gap: 8px; min-height: 20px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: #c9cfdb; }
+  .dots i.on { background: var(--rezen); }
+  .no-kamui .bar { display: flex; }
+  .no-kamui .stage { padding-top: 16px; }
+
+  /* Phone: one version per screen, swipe sideways between versions */
+  @media (max-width: 767px) {
+    .bar { display: flex; }
+    .stage { height: 100dvh; padding: 12px 0 14px; gap: 12px; }
+    .page-title { display: none; }
+    .page-title:has(.back) { display: block; padding: 0 16px; }
+    .row { display: flex; overflow-x: auto; overflow-y: hidden; justify-content: flex-start; gap: 16px; padding: 0 16px 4px; align-items: center; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+    .row::-webkit-scrollbar { display: none; }
+    .version { scroll-snap-align: center; scroll-snap-stop: always; align-items: center; }
+    .version-label { font-size: 14px; color: var(--navy); }
+    .dots { display: flex; }
+  }
+
+  /* ===== Review shell (6 Nov redesign): header, tabs, switch, headings, cards, scrollbar ===== */
+  :root { --u-bg: var(--ui-bg, #eef0f5); --u-fg: var(--ui-fg, #0b1030); --u-mut: var(--ui-muted, #646b85); --u-line: var(--ui-line, #d9dce6); --u-card: var(--ui-field, #ffffff); --u-acc: #4967fd; }
+  html, body { background: var(--u-bg); color: var(--u-fg); }
+  .stage { padding: 0 !important; gap: 0 !important; }
+  .bar { display: none !important; }
+  .hdr { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 28px; padding: 14px 40px;
+    background: color-mix(in srgb, var(--u-bg) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--u-line); }
+  .brand { display: flex; align-items: center; gap: 12px; flex: none; }
+  .brand .logo { width: 62px; height: 28px; color: var(--u-fg); }
+  .brand b { display: block; font: 400 17px/1.1 var(--font-display); }
+  .brand small { display: block; font: 400 12px/1.3 var(--font-body); color: var(--u-mut); }
+  .tabs { display: none !important; }
+  .hdr { position: sticky; }
+  .brand small { display: none !important; }
+  .brand > div { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+  .brand b { font-size: 20px !important; }
+  .hdr .sw { margin-left: auto; }
+  .segs { margin-left: auto; display: flex; gap: 12px; flex: none; }
+  .seg { display: flex; padding: 3px; gap: 2px; border: 1px solid var(--u-line); border-radius: 999px; background: var(--u-card); }
+  .seg button { height: 30px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--u-mut); font: 400 13px/1 var(--font-body); cursor: pointer; transition: background .2s, color .2s; }
+  .seg button:hover { color: var(--u-fg); }
+  .seg button[aria-pressed="true"] { background: var(--u-fg); color: var(--u-bg); }
+  .seg button:focus-visible { outline: 2px solid var(--u-acc); outline-offset: 2px; }
+  .page-title .seg.fmt { margin-left: 24px; align-self: center; }
+  /* Watch reel: the P1 Poster reel (media/yir-reel-P1.mp4) in the iPhone 17 Pro bezel */
+  .reelbtn { margin-left: 12px; align-self: center; flex: none; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px 0 14px; border: 0; border-radius: 999px;
+    background: var(--u-fg); color: var(--u-bg); font: 400 13px/1 var(--font-body); cursor: pointer; }
+  .reelbtn:hover { background: var(--u-acc); color: #fff; }
+  .reelbtn:focus-visible { outline: 2px solid var(--u-acc); outline-offset: 2px; }
+  .rv { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; background: rgba(8,10,24,.78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .rv-wrap { width: 450px; height: 920px; transform-origin: center; flex: none; }
+  .rv-phone { position: relative; width: 450px; height: 920px; filter: drop-shadow(0 40px 60px rgba(0,0,0,.45)); }
+  .rv-screen { position: absolute; left: 24px; top: 23px; width: 402px; height: 874px; border-radius: 58px; overflow: hidden; background: #000; }
+  /* Instagram Reels on iOS: the reel fills the screen above the tab bar; Reels UI and the iOS status bar and home indicator on top */
+  .rv-screen video { position: absolute; left: 0; top: 0; width: 100%; height: 791px; object-fit: cover; display: block; cursor: pointer; }
+  .rv-screen, .rv-ig { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .rv-ig { position: absolute; inset: 0; pointer-events: none; color: #fff; }
+  .rv-ig .mk-status { position: absolute; left: 0; right: 0; top: 0; height: 62px; z-index: 3; }
+  .rv-ig .mk-sb { display: block; }
+  .rv-ig .scr-t { position: absolute; left: 0; right: 0; top: 0; height: 150px; background: linear-gradient(rgba(0,0,0,.45), rgba(0,0,0,0)); }
+  .rv-ig .scr-b { position: absolute; left: 0; right: 0; top: 541px; height: 250px; background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.55)); }
+  .rv-ig .hd { position: absolute; left: 16px; right: 14px; top: 62px; height: 44px; display: flex; align-items: center; justify-content: space-between; z-index: 2; }
+  .rv-ig .hd b { display: inline-flex; align-items: center; gap: 4px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+  .rv-ig .act { position: absolute; right: 10px; bottom: 102px; width: 48px; display: flex; flex-direction: column; align-items: center; gap: 16px; z-index: 2; }
+  .rv-ig .act div { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 12px; font-weight: 500; }
+  .rv-ig .act svg { filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+  .rv-ig .aud { width: 28px; height: 28px; border-radius: 7px; border: 2px solid #fff; overflow: hidden; box-sizing: border-box; } .rv-ig .aud img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rv-ig .who { position: absolute; left: 14px; right: 74px; bottom: 102px; display: flex; flex-direction: column; gap: 9px; z-index: 2; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+  .rv-ig .u { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
+  .rv-ig .u img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+  .rv-ig .u i { font-style: normal; padding: 5px 11px; border: 1.5px solid rgba(255,255,255,.85); border-radius: 8px; font-size: 13px; font-weight: 600; }
+  .rv-ig .cap { font-size: 14px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .rv-ig .cap span { color: rgba(255,255,255,.7); }
+  .rv-ig .mus { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 5px 10px 5px 8px; border-radius: 999px; background: rgba(255,255,255,.18); font-size: 12.5px; font-weight: 500; }
+  .rv-ig .tab { position: absolute; left: 0; right: 0; bottom: 0; height: 83px; display: flex; justify-content: space-around; padding: 11px 6px 0; box-sizing: border-box; background: #000; border-top: .5px solid rgba(255,255,255,.12); z-index: 2; }
+  .rv-ig .tab .me { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; border: 1.5px solid #fff; box-sizing: border-box; } .rv-ig .tab .me img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rv-ig .home { position: absolute; left: 50%; bottom: 8px; width: 139px; height: 5px; margin-left: -69.5px; border-radius: 3px; background: #fff; z-index: 3; }
+  .rv-bezel { position: absolute; inset: 0; width: 450px; height: 920px; pointer-events: none; }
+  /* the Dynamic Island comes from the bezel image; no extra island here */
+  .rv-bar { position: absolute; left: 0; right: 0; top: 789px; height: 2px; background: rgba(255,255,255,.25); overflow: hidden; pointer-events: none; z-index: 2; }   /* Reels scrub line on the tab bar edge */
+  .rv-bar i { display: block; height: 100%; width: 0; background: #fff; }
+  .rv-ctl { margin-top: 18px; display: flex; gap: 10px; }
+  .rv-ctl button { height: 38px; padding: 0 16px; border: 0; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font: 400 13px/1 var(--font-body); cursor: pointer; }
+  .rv-ctl button:hover { background: rgba(255,255,255,.26); }
+  .rv-ctl { flex-wrap: wrap; justify-content: center; }
+  .rv-ver { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: rgba(255,255,255,.1); margin-right: 6px; }
+  .rv-ver button { height: 32px; background: none; }
+  .rv-top { margin: 0 0 18px; }   /* version switch sits above the phone (Laxman, 17 Nov) */
+  .rv-top .rv-ver { margin-right: 0; }
+  .rv-ver button[aria-pressed="true"] { background: #fff; color: #0b0b12; }
+  .rv-x { position: absolute; top: 64px; right: 28px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); color: #fff; font: 400 20px/1 system-ui; cursor: pointer; }
+  @media (max-width: 767px) { .reelbtn { padding: 0 12px; } .reelbtn span { display: none; } }
+  @media (max-width: 767px) { .segs { gap: 6px; } .seg button { padding: 0 10px; font-size: 12px; } }
+  .tabs-old { flex: 1; display: flex; justify-content: center; gap: 4px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button { flex: none; height: 36px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--u-mut); cursor: pointer;
+    font: 400 14px/1 var(--font-body); transition: background .15s, color .15s; }
+  .tabs button em { font-style: normal; margin-left: 6px; color: inherit; opacity: .8; }
+  .tabs button:hover { background: color-mix(in srgb, var(--u-fg) 7%, transparent); color: var(--u-fg); }
+  .tabs button.on { background: var(--u-fg); color: var(--u-bg); }
+  .tabs button:focus-visible, .back:focus-visible, .sw input:focus-visible + i { outline: 2px solid var(--u-acc); outline-offset: 2px; }
+  .sw { flex: none; display: flex; align-items: center; gap: 10px; cursor: pointer; font: 400 13px/1 var(--font-body); color: var(--u-mut); }
+  .sw input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .sw i { width: 40px; height: 24px; border-radius: 999px; background: var(--u-line); position: relative; transition: background .2s; }
+  .sw i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+  .sw input:checked + i { background: var(--u-acc); }
+  .sw input:checked + i::after { transform: translateX(16px); }
+  .page-title { display: flex !important; align-items: center; gap: 16px; padding: 30px 40px 6px; color: var(--u-fg) !important; }
+  .page-title .h h1 { margin: 0; font: 400 34px/1.1 var(--font-display); letter-spacing: -.02em; }
+  .page-title .h h1 span { font: 400 14px/1 var(--font-body); color: var(--u-mut); vertical-align: middle; margin-left: 8px; padding: 5px 9px; border: 1px solid var(--u-line); border-radius: 999px; }
+  .page-title .h p { margin: 6px 0 0; font: 400 14px/1.3 var(--font-body); color: var(--u-mut); }
+  .page-title .back { width: 44px; height: 44px; flex: none; display: grid; place-items: center; padding: 0; border: 1px solid var(--u-line) !important; border-radius: 50%; background: var(--u-card) !important; color: var(--u-fg) !important; cursor: pointer; }
+  .page-title .back:hover { background: var(--u-fg) !important; color: var(--u-bg) !important; }
+  .row { padding: 22px 40px 60px !important; gap: 40px 32px !important; justify-content: center !important; }
+  .page-title { padding-left: max(40px, var(--gx, 40px)) !important; }
+  .version { gap: 12px !important; }
+  .version-label { display: flex; align-items: center; gap: 10px; font: 400 14px/1 var(--font-body) !important; color: var(--u-fg) !important; }
+  .version-label .num { font: 400 12px/1 var(--font-body); color: var(--u-mut); padding: 4px 8px; border: 1px solid var(--u-line); border-radius: 999px; }
+  .frame { box-shadow: 0 1px 2px rgba(11,16,48,.06), 0 14px 34px rgba(11,16,48,.10); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; }
+  .version:hover .frame { transform: translateY(-4px); box-shadow: 0 2px 4px rgba(11,16,48,.08), 0 24px 50px rgba(11,16,48,.16); }
+  .version.open .version-label::after { content: "Open →"; margin-left: auto; font-size: 13px; color: var(--u-acc); opacity: 0; transition: opacity .2s; }
+  .version.open:hover .version-label::after { opacity: 1; }
+  /* no card shadow; label sits below the slide (6 Nov) */
+  .frame, .version:hover .frame { box-shadow: none !important; }
+  .version-label { order: 2; }
+  .version .frame { order: 1; }
+  /* scrollbar */
+  .row { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--u-fg) 22%, transparent) transparent; }
+  .row::-webkit-scrollbar { width: 10px; height: 10px; }
+  .row::-webkit-scrollbar-track { background: transparent; }
+  .row::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--u-fg) 18%, transparent); border-radius: 999px; border: 3px solid var(--u-bg); }
+  .row::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--u-fg) 34%, transparent); }
+  .dots i { border-radius: 999px; transition: width .2s; } .dots i.on { width: 22px; background: var(--u-acc); }
+  @media (max-width: 767px) {
+    .hdr { flex-wrap: wrap; gap: 10px 14px; padding: 10px 16px; }
+    .brand small { display: none; }
+    .tabs { order: 3; flex-basis: 100%; justify-content: flex-start; }
+    .tabs button { height: 32px; padding: 0 12px; font-size: 13px; }
+    .sw { margin-left: auto; } .sw span { display: none; }
+    .page-title { display: flex !important; padding: 12px 16px 0; } .page-title .h h1 { font-size: 22px; } .page-title .h p { display: none; }
+    .page-title .back { width: 36px; height: 36px; }
+    .row { padding: 8px 16px 4px !important; gap: 16px !important; justify-content: flex-start !important; }
+    .page-title { padding-left: 16px !important; }
+    .version.open .version-label::after { display: none; }
+  }
+</style>
+</head>
+<body>
+<main class="stage">
+  <header class="hdr">
+    <div class="brand"><span class="logo"></span><div><b>Year in Review</b><small>2026 · Leo Pro carousel</small></div></div>
+    <nav class="tabs" id="tabs" aria-label="Versions"></nav>
+    <div class="segs">
+      <div class="seg" role="group" aria-label="Colour system" title="Monocolor: one colour scheme on every page. Bicolor: the big-win pages (03, 05, 07, 09) swap colours.">
+        <button type="button" data-k="color" data-v="mono">Monocolor</button><button type="button" data-k="color" data-v="bi">Bicolor</button></div>
+      <div class="seg" role="group" aria-label="Agent photo">
+        <button type="button" data-k="photo" data-v="on">Photo</button><button type="button" data-k="photo" data-v="off">No photo</button></div>
+      <div class="seg" role="group" aria-label="Brand" title="Real: Real Brokerage posters. REMAX: the same posters in the REMAX brand (Real REMAX Group agents).">
+        <button type="button" data-k="brand" data-v="real">Real</button><button type="button" data-k="brand" data-v="remax">REMAX</button></div>
+    </div>
+  </header>
+  <div class="bar" id="bar">
+    <button id="prev" aria-label="Previous page">‹</button>
+    <select id="pageSel" aria-label="Page"></select>
+    <button id="next" aria-label="Next page">›</button>
+    <button class="photo" id="photoBtn" aria-pressed="false">No photo</button>
+  </div>
+  <div class="page-title" id="title"></div>
+  <div class="row" id="row"></div>
+  <div class="dots" id="dots"></div>
+</main>
+
+<!--
+  DESIGNS GO HERE. One <template> per version:
+    Versions show left to right in the order they appear in this file.
+-->
+
+<!-- ===== 01 · Cover · set 3: photo-led poster (speaker-card style) ===== -->
+<template data-page="01" data-version="P1" data-name="Poster" data-class="c-p2">
+  <div class="abs grid"></div>
+  <i class="abs sq" style="left:372px;top:138px"></i><i class="abs sq" style="left:96px;top:560px"></i><i class="abs sq" style="left:930px;top:640px"></i>
+  <svg class="abs burst" viewBox="0 0 1080 1350" aria-hidden="true"><defs><linearGradient id="irid" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a7bff"/><stop offset=".3" stop-color="#8a4dff"/><stop offset=".55" stop-color="#ff4fb8"/><stop offset=".8" stop-color="#ff9a3d"/><stop offset="1" stop-color="#3ddc97"/></linearGradient></defs><g class="petals" transform="translate(560 760)"><rect class="petal" transform="rotate(0)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(45)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(90)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(135)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(180)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(225)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(270)" x="-118" y="-640" width="236" height="640" rx="118"/><rect class="petal" transform="rotate(315)" x="-118" y="-640" width="236" height="640" rx="118"/></g></svg>
+  <span class="abs logo"></span>
+  <div class="abs headline"><span class="l">My year</span><span class="r">at Real</span></div>
+  <img class="abs person photo-only" data-yir-src="agent.cutout" alt="">
+  <div class="abs np-year np-only" data-yir="year"></div>
+  <div class="abs shade"></div>
+  <div class="abs who"><div class="nm" data-yir="agent.name"></div><div class="br" data-yir="agent.brokerage"></div></div>
+  <div class="abs sfacts st-only"><div><b data-yir-page="05.value"></b><span data-yir-page="05.label"></span></div><div><b data-yir-page="07.value"></b><span data-yir-page="07.label"></span></div><div><b data-yir-page="10.value"></b><span data-yir-page="10.label"></span></div></div>
+  <div class="abs info">
+    <div class="cell c1"><div class="lb">Year in review</div><div class="big" data-yir="year"></div></div>
+    <div class="cell c2"><div class="lb">Highlights</div><div class="st"><span data-yir-page="02.value"></span> homes closed</div><div class="st"><span data-yir-page="03.value"></span> in volume</div></div>
+    <div class="cell c3"><div class="lb">See my year</div><div class="big sm">Swipe</div></div>
+  </div>
+</template>
+
+<!-- ===== 01 · Cover · set 2: ring vortex ===== -->
+<template data-page="01" data-version="G1" data-name="Glow" data-class="c-g">
+  <div class="abs glow g1"></div><div class="abs glow g2"></div><div class="abs glow g3"></div><div class="abs glow g4"></div>
+  <canvas class="abs grain" data-grain="fine-noise" width="1080" height="1350"></canvas>
+  <img class="abs person photo-only" data-yir-src="agent.cutout" alt="">
+  <div class="abs big-year np-only" data-yir="year"></div>
+  <span class="abs logo"></span>
+  <div class="abs tags"><span class="tag solid" data-yir="year"></span><span class="tag">Year in review</span></div>
+  <div class="abs nm" data-yir="agent.name"></div>
+  <div class="abs sub"><span data-yir="agent.brokerage"></span> · <span data-yir="cover.title"></span></div>
+  <div class="abs sfacts st-only"><div><b data-yir-page="02.value"></b><span data-yir-page="02.label"></span></div><div><b data-yir-page="03.value"></b><span data-yir-page="03.label"></span></div><div><b data-yir-page="05.value"></b><span data-yir-page="05.label"></span></div></div>
+  <div class="abs swipe" data-yir="cover.cta"></div>
+</template>
+
+
+<script src="wrapped.js"></script>   <!-- Wrapped (V4): local only for now; the page works without it -->
+<script>
+  // 10 pages and their copy come from content.js (v1 carousel in Figma)
+  const PAGES = YIR.pages;
+  // Pattern break: the big-achievement pages swap their poster's colours (slides.css, .swap)
+  const SWAP = ['03', '05', '07', '09'];
+  // Plain content view shown until a page has a designed version
+  function contentView(p) {
+    const a = YIR.agent;
+    if (p.id === '01') return `<div class="num">${p.id}</div>
+      <div class="copy"><div class="k">${YIR.cover.kicker}</div><div class="v">${YIR.cover.title}</div>
+      <div class="n">${a.name} · ${a.brokerage}</div><div class="n">${YIR.cover.cta}</div></div>`;
+    return `<div class="num">${p.id}</div>
+      <div class="copy"><div class="k">${p.name}</div><div class="v">${p.value}</div>
+      <div class="l">${p.label}</div><div class="n">${p.note}</div></div>`;
+  }
+
+  const row = document.getElementById('row'), title = document.getElementById('title');
+  // Two views: 'home' shows every cover version; a version id (e.g. 'V4') opens that version's 10 pages
+  const COVERS = () => [...document.querySelectorAll('template[data-page="01"]')].map(t => ({ id: t.dataset.version, name: t.dataset.name, t }));
+  let view = 'home', noPhoto = false, breaks = true, story = false, brand = 'real';   // brand: 'real' or 'remax' (remax.css, assets/remax)
+    // story: P1 in 9:16 story size   // breaks: Bicolor (big-win pages swap colours); false = Monocolor
+
+  const phone = () => matchMedia('(max-width: 767px)').matches;
+  function fit() {
+    let sc;
+    if (phone()) sc = Math.min((innerWidth - 32) / 1080, (row.clientHeight - 28) / (isStory() ? 1920 : 1350)); // one slide fills the screen
+    else sc = Math.max(0.15, Math.min((row.clientWidth - 80 - 2 * 32 - 12) / 3 / 1080, 0.34)); // three columns fill the width
+    document.body.style.setProperty('--scale', sc.toFixed(3));
+    const gx = () => { const v = row.firstElementChild; if (v && !phone()) document.body.style.setProperty('--gx', Math.round(v.getBoundingClientRect().left - row.getBoundingClientRect().left) + 'px'); };
+    requestAnimationFrame(gx); setTimeout(gx, 400); // title lines up with the centred grid (again once the scrollbar has settled)
+  }
+
+  // Toolbar (phones, and wherever the Kamui bar isn't): All covers / each version, arrows, photo switch
+  const pageSel = document.getElementById('pageSel'), photoBtn = document.getElementById('photoBtn'), dots = document.getElementById('dots');
+  const VIEWS = () => [{ id: 'home', label: 'All covers' }, ...COVERS().map(c => ({ id: c.id, label: `${c.id} · ${c.name}` }))];
+  pageSel.innerHTML = VIEWS().map(v => `<option value="${v.id}">${v.label}</option>`).join('');
+  const go = id => { view = id; render(); saveHash(); if (window.KamuiBar && KamuiBar.select) try { KamuiBar.select(id); } catch (e) {} };
+  pageSel.onchange = () => go(pageSel.value);
+  const step = d => { const vs = VIEWS(), i = vs.findIndex(v => v.id === view); go(vs[(i + d + vs.length) % vs.length].id); };
+  document.getElementById('prev').onclick = () => step(-1);
+  document.getElementById('next').onclick = () => step(1);
+  photoBtn.onclick = () => { noPhoto = !noPhoto; render(); saveHash(); };
+  const tgs = () => [noPhoto && 'nophoto', !breaks && 'nobreak', story && 'story', brand === 'remax' && 'remax'].filter(Boolean).join(',');
+  const STORY_SETS = ['P1', 'G1', 'V4'];   // versions with a story size, the iPhone preview and a reel
+  const isStory = () => story && STORY_SETS.includes(view);
+  function saveHash() { if (!window.KamuiBar) history.replaceState(null, '', `#opt=${view}${tgs() ? '&tg=' + tgs() : ''}`); }
+  (() => { const h = new URLSearchParams(location.hash.slice(1)); if (h.get('opt') && VIEWS().some(v => v.id === h.get('opt'))) view = h.get('opt'); const tg = (h.get('tg') || '').split(','); if (tg.includes('nophoto')) noPhoto = true; if (tg.includes('nobreak')) breaks = false; if (tg.includes('story')) story = true; if (tg.includes('remax')) brand = 'remax'; })();
+  const tabs = document.getElementById('tabs');
+  // Watch reel: plays media/yir-reel-P1.mp4 in the iPhone bezel (play/pause, sound, replay; Esc or ✕ closes)
+  // Instagram Reels interface over the reel: iOS status bar (Figma kit, via mock.js), Reels header, actions, caption, audio, tab bar, home indicator
+  function reelsUI() {
+    const M = window.YIRMock || {}, I = M.ICON || {}, A = YIR.agent || {};
+    const user = (A.name || 'agent').toLowerCase().replace(/[^a-z]+/g, '.'), photo = A.photo || '';
+    const sv = (p, w = 28, extra = '') => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" ${extra}>${p}</svg>`;
+    const heart = sv('<path d="M12 20.5s-7.5-4.6-9.2-9.1C1.6 8 3.6 4.5 7.1 4.5c2.1 0 3.6 1.2 4.9 3 1.3-1.8 2.8-3 4.9-3 3.5 0 5.5 3.5 4.3 6.9-1.7 4.5-9.2 9.1-9.2 9.1z"/>');
+    const comment = sv('<path d="M20.5 12a8.5 8.5 0 1 1-3.4-6.8A8.4 8.4 0 0 1 20.5 12c0 1.4-.3 2.7-.9 3.9l1.1 4.6-4.6-1.1A8.5 8.5 0 0 1 12 20.5"/>');
+    const repost = sv('<path d="M17 2.5l3 3-3 3"/><path d="M4 11.5v-2a4 4 0 0 1 4-4h12"/><path d="M7 21.5l-3-3 3-3"/><path d="M20 12.5v2a4 4 0 0 1-4 4H4"/>');
+    const send = sv('<path d="M21.5 3 10 13.5M21.5 3 15 21l-5-7.5L2.5 9z"/>');
+    const dots = `<svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>`;
+    const camera = sv('<path d="M3 8.5a2 2 0 0 1 2-2h2.3l1.6-2.2h6.2l1.6 2.2H19a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.8"/>', 28);
+    const chev = sv('<path d="M6 9l6 6 6-6"/>', 18, 'stroke-width="2.4"');
+    const note = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M9 18.5a3 3 0 1 1-2-2.83V4.5l13-2.5v13.5a3 3 0 1 1-2-2.83V6.6L9 8.3z"/></svg>`;
+    const tabI = { home: sv('<path d="M3 10.2 12 3l9 7.2V21h-6v-6.5H9V21H3z"/>', 26),
+      reels: `<svg width="26" height="26" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" fill="#fff"/><path d="M2.5 8.2h19M8.6 2.6l3 5.6M15.2 2.6l3 5.6" stroke="#000" stroke-width="1.7"/><path d="M10 11.6v6l5.2-3z" fill="#000"/></svg>`,
+      send: sv('<path d="M21.5 3 10 13.5M21.5 3 15 21l-5-7.5L2.5 9z"/>', 26), search: sv('<circle cx="10.5" cy="10.5" r="7"/><path d="M15.8 15.8 21 21"/>', 26) };
+    return `<div class="rv-ig"><i class="scr-t"></i><i class="scr-b"></i>${M.status ? M.status('#fff') : ''}
+      <div class="hd"><b>Reels ${chev}</b>${camera}</div>
+      <div class="act"><div>${heart}<span>12.4K</span></div><div>${comment}<span>318</span></div><div>${repost}<span>56</span></div><div>${send}<span>204</span></div><div>${dots}</div><span class="aud"><img src="${photo}" alt=""></span></div>
+      <div class="who"><div class="u"><img src="${photo}" alt="">${user}<i>Follow</i></div>
+        <div class="cap">My ${YIR.year} at Real 🏡✨ <span>... more</span></div>
+        <div class="mus">${note}${user} · Original audio</div></div>
+      <div class="tab">${tabI.home}${tabI.reels}${tabI.send}${tabI.search}<span class="me"><img src="${photo}" alt=""></span></div><i class="home"></i></div>`;
+  }
+
+  function openReel(id = 'P1', name = 'Poster') {
+    const rv = document.createElement('div'); rv.className = 'rv'; rv.setAttribute('role', 'dialog'); rv.setAttribute('aria-label', name + ' reel');
+    rv.innerHTML = `<button class="rv-x" aria-label="Close">✕</button><div class="rv-ctl rv-top"><span class="rv-ver" role="group" aria-label="Reel version"><button data-ver="1" aria-pressed="false">Version 1</button><button data-ver="2" aria-pressed="true">Version 2 · icon motion</button></span></div><div class="rv-wrap"><div class="rv-phone"><div class="rv-screen">
+      <video src="media/yir-reel-${id}-v2.mp4" playsinline autoplay loop preload="auto"></video>${reelsUI()}<div class="rv-bar"><i></i></div></div>
+      <img class="rv-bezel" src="assets/iphone17-pro-bezel.png" alt=""></div></div>
+      <div class="rv-ctl"><button data-a="play">Pause</button><button data-a="sound">Sound off</button><button data-a="replay">Replay</button></div>`;
+    document.body.appendChild(rv);
+    const v = rv.querySelector('video'), bar = rv.querySelector('.rv-bar i'), wrap = rv.querySelector('.rv-wrap');
+    const fitRv = () => { const k = Math.min(1, (innerHeight - 180) / 920, (innerWidth - 40) / 450); wrap.style.transform = `scale(${k.toFixed(3)})`; wrap.style.margin = `${(920 * (k - 1) / 2).toFixed(0)}px ${(450 * (k - 1) / 2).toFixed(0)}px`; };
+    fitRv(); addEventListener('resize', fitRv);
+    const btn = a => rv.querySelector(`[data-a="${a}"]`);
+    const sync = () => { btn('play').textContent = v.paused ? 'Play' : 'Pause'; btn('sound').textContent = v.muted ? 'Sound on' : 'Sound off'; };
+    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); }).finally(sync);   // the click allows sound; fall back to muted
+    v.ontimeupdate = () => { bar.style.width = (v.currentTime / (v.duration || 1) * 100).toFixed(2) + '%'; };
+    v.onclick = () => { v.paused ? v.play() : v.pause(); sync(); };
+    btn('play').onclick = v.onclick;
+    btn('sound').onclick = () => { v.muted = !v.muted; sync(); };
+    btn('replay').onclick = () => { v.currentTime = 0; v.play(); sync(); };
+    // Version 1: the reel as first made; Version 2: the same cut with the icons animated (reel.js #reel=…&v2);
+    // (Version 3, full screen, was removed from the viewer on 17 Nov; reel.js &full still renders it)
+    rv.querySelectorAll('[data-ver]').forEach(b => b.onclick = () => {
+      rv.querySelectorAll('[data-ver]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      v.src = `media/yir-reel-${id}${b.dataset.ver === '1' ? '' : '-v' + b.dataset.ver}.mp4`; v.currentTime = 0; v.play().catch(() => {}); sync(); });
+    const close = () => { v.pause(); v.removeAttribute('src'); v.load();   // release the download so reopening never stalls
+      removeEventListener('resize', fitRv); removeEventListener('keydown', key); rv.remove(); };
+    const key = e => { if (e.key === 'Escape') close(); if (e.key === ' ') { e.preventDefault(); v.onclick(); } };
+    addEventListener('keydown', key);
+    rv.querySelector('.rv-x').onclick = close;
+    rv.addEventListener('click', e => { if (e.target === rv) close(); });
+  }
+  // top-bar segmented controls: colour system (Monocolor / Bicolor) and agent photo (Photo / No photo)
+  const segBtns = [...document.querySelectorAll('.seg button')];
+  segBtns.forEach(b => b.onclick = () => { if (b.dataset.k === 'color') breaks = b.dataset.v === 'bi'; else if (b.dataset.k === 'brand') brand = b.dataset.v; else noPhoto = b.dataset.v === 'off'; render(); saveHash(); });
+  function syncBar(count) {
+    pageSel.value = view; photoBtn.setAttribute('aria-pressed', noPhoto); segBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.k === 'color' ? String((b.dataset.v === 'bi') === breaks) : b.dataset.k === 'brand' ? String(b.dataset.v === brand) : String((b.dataset.v === 'off') === noPhoto)));
+    tabs.innerHTML = VIEWS().map(v => `<button class="${v.id === view ? 'on' : ''}" data-v="${v.id}">${v.id === 'home' ? 'All' : v.label.replace(' · ', ' <em>') + '</em>'}</button>`).join('');
+    tabs.querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.v));
+    dots.innerHTML = Array.from({ length: count }, (_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('');
+  }
+  row.addEventListener('scroll', () => {
+    const vs = [...row.children]; if (!vs.length) return;
+    const mid = row.scrollLeft + row.clientWidth / 2;
+    let best = 0, bd = Infinity; vs.forEach((v, i) => { const d = Math.abs(v.offsetLeft + v.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } });
+    [...dots.children].forEach((d, i) => d.classList.toggle('on', i === best));
+  }, { passive: true });
+
+  function slideHTML(t, p, label, cls) {
+    const lab = label.replace(/^(\w+) · /, '<span class="num">$1</span>');
+    return `<div class="version${cls ? ' ' + cls : ''}"${t && cls === 'open' ? ` data-open="${t.dataset.version}"` : ''}><div class="version-label">${lab}</div>
+      <div class="frame"><section class="slide ${t ? (t.dataset.class || '') : 'empty'}${noPhoto ? ' no-photo' : ''}${isStory() ? ' st9' : ''}${brand === 'remax' ? ' rx' : ''}" data-page="${p.id}" data-next="${(PAGES[PAGES.findIndex(x => x.id === p.id) + 1] || {}).name || ''}">
+        ${t ? (brand === 'remax' ? t.innerHTML.replace(/assets\/(ill|ir|gl)-/g, 'assets/remax/$1-') : t.innerHTML) : contentView(p)}
+      </section></div></div>`;
+  }
+
+  function render() {
+    window.YIR_NOPHOTO = noPhoto; window.YIR_BRAND = brand;   // read by pages.js (Wrapped: illustration pages in No photo)
+    const covers = COVERS();
+    if (view !== 'home' && !covers.some(c => c.id === view)) view = 'home';
+    document.body.style.setProperty('--slide-h', isStory() ? '1920px' : '1350px');
+    let html = '', count = 0;
+    if (view === 'home') {
+      title.innerHTML = `<div class="h"><h1>All covers</h1><p>${covers.length} versions · open one to see its 10 pages</p></div>`;
+      covers.forEach(c => { html += slideHTML(c.t, PAGES[0], `${c.id} · ${c.name} &nbsp;→`, 'open'); count++; });
+    } else {
+      const c = covers.find(x => x.id === view);
+      title.innerHTML = `<button class="back" id="backBtn" aria-label="All covers"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="h"><h1>${c.name} <span>${c.id}</span></h1><p>${PAGES.length} pages · ${STORY_SETS.includes(c.id) ? 'tap a page to preview it on iPhone' : 'tap a page to replay its motion'}</p></div>${STORY_SETS.includes(c.id) ? `<div class="seg fmt" role="group" aria-label="Size"><button type="button" data-v="post" aria-pressed="${!story}">Poster 4:5</button><button type="button" data-v="story" aria-pressed="${story}">Story 9:16</button></div><button type="button" class="reelbtn" id="reelBtn" title="Watch the ${c.name} reel on iPhone"><svg viewBox="0 0 24 24" width="14" height="14"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></svg><span>Watch reel</span></button>` : ''}`;
+      const rb = document.getElementById('reelBtn'); if (rb) rb.onclick = () => openReel(c.id, c.name);
+      title.querySelectorAll('.fmt:not(.illsw) button').forEach(b => b.onclick = () => { story = b.dataset.v === 'story'; render(); saveHash(); });
+      PAGES.forEach(p => {
+        let t = p.id === '01' ? c.t : document.querySelector(`template[data-page="${p.id}"][data-set="${c.id}"]`);
+        if (!t && window.YIR_SETS && YIR_SETS[c.id]) { const g = YIR_SETS[c.id](p, PAGES.indexOf(p), isStory()); t = { dataset: { class: g.cls + (breaks && SWAP.includes(p.id) ? ' swap' : '') }, innerHTML: g.html }; }
+        html += slideHTML(t, p, `${p.id} · ${p.name}${t ? '' : ' · not designed yet'}`, ''); count++;
+      });
+    }
+    row.innerHTML = html;
+    const back = document.getElementById('backBtn'); if (back) back.onclick = () => go('home');
+    bind(row);
+    if (window.Grain) Grain.renderAll(row);
+    if (window.Rings) Rings.renderAll(row);
+    syncBar(count);
+    row.scrollLeft = 0;
+    fit();
+  }
+  addEventListener('resize', fit);
+
+  // Home: tap a cover to open its version. Inside a version: tap a slide to replay its motion.
+  row.addEventListener('click', e => {
+    const open = e.target.closest('.version.open'); if (open) { go(open.dataset.open); return; }
+    const sl = e.target.closest('.slide'); if (!sl || sl.classList.contains('empty')) return;
+    // P1: open the iPhone 17 mockup (Instagram post or story) at this page
+    if (STORY_SETS.includes(view) && window.YIRMock) { const all = [...row.querySelectorAll('.slide')]; YIRMock.open({ slides: all, index: all.indexOf(sl), mode: isStory() ? 'story' : 'post' }); return; }
+    const c = sl.cloneNode(true); sl.replaceWith(c);
+    if (window.Grain) Grain.renderAll(c); if (window.Rings) Rings.renderAll(c);
+  });
+
+  // Fill designs from content.js: data-yir="cover.title" (text), data-yir-src="agent.photo" (img src),
+  // data-yir-page="03.value" (a figure page's field)
+  function bind(root) {
+    const get = path => path.split('.').reduce((o, k) => (o == null ? o : o[k]), YIR);
+    root.querySelectorAll('[data-yir]').forEach(el => { el.textContent = get(el.dataset.yir) ?? ''; });
+    root.querySelectorAll('[data-yir-src]').forEach(el => { el.src = get(el.dataset.yirSrc) ?? ''; });
+    root.querySelectorAll('[data-yir-page]').forEach(el => {
+      const [id, key] = el.dataset.yirPage.split('.');
+      el.textContent = (YIR.pages.find(p => p.id === id) || {})[key] ?? '';
+    });
+  }
+
+  // Kamui bar: the same views (All covers, then each version) and the photo switch
+  const cfg = {
+    id: 'year-in-review', title: 'Year in Review',
+    options: VIEWS().map(v => ({ id: v.id, label: v.label })),
+    defaultOption: 'home',
+    toggles: [{ id: 'nophoto', label: 'No agent photo', note: 'Cover without the agent image' }],
+    onSelect(id) { if (id !== view) { view = id; render(); } },
+    onToggle(id, on) { if (id === 'nophoto' && on !== noPhoto) { noPhoto = on; render(); } },
+  };
+  render();
+  window.KamuiBar ? window.KamuiBar.register(cfg) : (window.KamuiBarQueue = window.KamuiBarQueue || []).push(cfg);
+  // Load the bar here too when the dev Chrome injector hasn't (local copy of Bolt brain/Tools/kamui-bar). Localhost only;
+  // elsewhere (a phone on the Wi-Fi) the page uses its own toolbar.
+  const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  if (!local) document.body.classList.add('no-kamui');
+  setTimeout(() => { if (local && !window.KamuiBar && !/render|figma=/.test(location.search)) { const s = document.createElement('script'); s.src = 'kamui-bar.js'; document.head.appendChild(s); } }, 300);   // no bar in reel renders or Figma captures (it rewrites the hash)
+</script>
+</body>
+</html>

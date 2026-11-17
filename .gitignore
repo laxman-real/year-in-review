@@ -1,0 +1,25 @@
+# macOS and local tool state
+.DS_Store
+.playwright-mcp/
+kamui-context.json
+
+# Generated: rebuild with build-artifact.py, tools/*.sh, tools/bake.mjs
+artifact/
+export/*
+!export/yir-reel-music-v1.mp3
+tools/r6-*/
+tools/t*/
+tools/*.jpg
+tools/*.png
+
+# Reel Version 3 (full screen) was removed from the viewer on 17 Nov
+media/*-v3.mp4
+
+# Wrapped (V4) stays local until it's ready to share (Laxman, 17 Nov). Remove these lines to publish it.
+wrapped.js
+assets/ill-*.png
+assets/remax/ill-*.png
+assets/bg-*.jpg
+assets/_old-illustrations/
+media/yir-reel-V4*.mp4
+tools/reels-wrapped.sh

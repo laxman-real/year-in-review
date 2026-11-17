@@ -1,0 +1,81 @@
+/* Year in Review: REMAX brand layer (17 Nov). index.html adds .rx to every slide when the header switch is on REMAX.
+   Rules come from the REMAX Brand Identity Manual (22nd ed.) as collected in assets/remax/BRAND.md:
+   Brand Colors only (Primary Red #FF1200, Primary Blue #0043FF, Cream #F7F5EE, Black, Dark Blue #000E35,
+   Dark Red #660000, Sky Blue #A3D4F2, White); gradients only within Primary Red or Primary Blue; Montserrat (the web
+   face); the Primary logotype (Balloon + wordmark) in Black or Cream only, never in a box. Art is recoloured in code. */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;800&display=block");
+
+.rx {
+  --navy: #000E35; --rezen: #0043FF; --light: #F7F5EE; --white: #FFFFFF; --onyx: #000000; --lime: #FF1200;
+  --rx-red: #FF1200; --rx-blue: #0043FF; --rx-cream: #F7F5EE; --rx-dkblue: #000E35; --rx-dkred: #660000; --rx-sky: #A3D4F2;
+  --font-display: "Montserrat", system-ui, sans-serif; --font-body: "Montserrat", system-ui, sans-serif;
+}
+/* Primary logotype: Cream on colour, Black on light grounds. Same height as the Real logo, wider. */
+.rx .logo { width: 210px !important; height: 58px !important; background: url(assets/remax/lockup-cream.png) no-repeat left center / contain !important;
+  -webkit-mask: none !important; mask: none !important; }
+.rx .logo > * { display: none; }
+
+/* ===== V4 Wrapped: Primary Blue field, Primary Red accent (sticker, extrusion), Dark Blue chips ===== */
+.rx.c-w { background: radial-gradient(circle at 12% 92%, #3d6dff 0%, rgba(61,109,255,0) 42%), radial-gradient(circle at 95% 0%, #2a5cff 0%, rgba(42,92,255,0) 40%), linear-gradient(165deg, #0043FF 0%, #0036d4 100%); }
+.rx.c-w .sticker { background: linear-gradient(135deg, #ff3b2b, #FF1200); color: #fff; }
+.rx.c-w .chip { color: var(--rx-cream); }
+.rx.c-w:not(.ip4) .chip { background: var(--rx-dkblue); color: #fff; }
+.rx.c-w .spark { fill: #fff; }
+/* break pages: Primary Red field, white type, Dark Red extrusion, Dark Blue sticker */
+.rx.c-w.swap { --lime: #660000; color: #fff; background: linear-gradient(165deg, #ff2a18 0%, #FF1200 55%, #e01000 100%); }
+.rx.c-w.swap .num { color: #fff; }
+.rx.c-w.swap .lbl, .rx.c-w.swap .left .t, .rx.c-w.swap .chip, .rx.c-w.swap .pgn, .rx.c-w.swap .left .s { color: #fff; }
+.rx.c-w.swap .sticker { background: var(--rx-dkblue); color: #fff; }
+.rx.c-w.swap .div4 { background: #fff; opacity: .5; }
+.rx.c-w.swap .sfacts b { color: #fff; text-shadow: 4px 4px 0 #660000; }
+.rx.c-w.swap .sfacts span { color: #fff; }
+.rx.c-w.st9.swap .sfacts { border-top-color: rgba(255,255,255,.4); }
+.rx.c-w.st9.swap .sfacts div + div { border-left-color: rgba(255,255,255,.3); }
+
+/* ===== P1 Poster: Dark Blue field, red/blue petals and art, Sky Blue secondary type ===== */
+.rx.c-p2 { background: var(--rx-dkblue);
+  --irid: linear-gradient(110deg, #0043FF 0%, #2a62ff 45%, #FF1200 55%, #ff3b2b 100%); }
+.rx.c-p2 .petal:nth-child(odd) { fill: var(--rx-red); }
+.rx.c-p2 .petal:nth-child(even) { fill: var(--rx-blue); }
+.rx.c-p2 .burst { fill: var(--rx-blue); }
+.rx.c-p2 .shade, .rx.c-p2 .shade2 { background: linear-gradient(180deg, rgba(0,14,53,0), rgba(0,14,53,.85) 40%, #000E35 75%); }
+.rx.c-p2 .who .br, .rx.c-p2 .lb, .rx.ip1 .headline .r, .rx.ip1 .lbl { color: var(--rx-sky); }
+.rx.c-p2 .c1 { background: #000a26; }
+.rx.c-p2 .c2 { background: rgba(0,67,255,.55); }
+.rx.c-p2 .c3 { background: rgba(255,18,0,.5); }
+.rx.c-p2 .c3::after { background: var(--rx-red); }
+.rx.ip1 .irglow { background: radial-gradient(circle, rgba(0,67,255,.9), rgba(255,18,0,.6) 55%, rgba(255,18,0,0) 70%); }
+.rx.c-p2 .streak.h, .rx.c-p2 .streak.v { background: linear-gradient(90deg, transparent, #0043FF 30%, #FF1200 70%, transparent); }
+.rx.c-p2 .grid { opacity: .6; }
+/* break pages: Cream field, Black type, Primary Red accents */
+.rx.c-p2.swap { background: var(--rx-cream); color: #000; }
+.rx.c-p2.swap .logo { background-image: url(assets/remax/lockup-black.png) !important; }
+.rx.c-p2.swap .headline .l, .rx.c-p2.swap .val, .rx.c-p2.swap .info .nm1, .rx.c-p2.swap .info .big { color: #000; }
+.rx.c-p2.swap .shade2 { background: linear-gradient(180deg, rgba(247,245,238,0) 0%, rgba(247,245,238,.7) 30%, rgba(247,245,238,.94) 60%, #F7F5EE 80%); }
+.rx.c-p2.swap .info { background: linear-gradient(rgba(255,255,255,.85), rgba(255,255,255,.85)) padding-box, var(--irid) border-box; color: #000; }
+.rx.c-p2.swap .lbl, .rx.c-p2.swap .headline .r { color: var(--rx-red); }
+.rx.c-p2.st9.swap .sfacts b { color: #000; }
+
+/* ===== G1 Glow: Cream mesh with Primary Blue, Sky Blue and Primary Red light; Black capitals ===== */
+.rx.c-g { background:
+  radial-gradient(60% 45% at 8% 10%, rgba(0,67,255,.55) 0%, rgba(0,67,255,0) 100%),
+  radial-gradient(55% 40% at 92% 6%, rgba(163,212,242,.9) 0%, rgba(163,212,242,0) 100%),
+  radial-gradient(60% 45% at 85% 48%, rgba(255,18,0,.45) 0%, rgba(255,18,0,0) 100%),
+  radial-gradient(55% 45% at 12% 55%, rgba(163,212,242,.8) 0%, rgba(163,212,242,0) 100%),
+  radial-gradient(70% 45% at 20% 98%, rgba(255,18,0,.35) 0%, rgba(255,18,0,0) 100%),
+  radial-gradient(60% 40% at 95% 100%, rgba(0,67,255,.4) 0%, rgba(0,67,255,0) 100%),
+  linear-gradient(160deg, #F7F5EE 0%, #ffffff 55%, #F7F5EE 100%); }
+.rx.c-g .g1 { background: var(--rx-blue); }
+.rx.c-g .g2 { background: var(--rx-sky); }
+.rx.c-g .g3 { background: var(--rx-red); }
+.rx.c-g .g4 { background: var(--rx-sky); }
+.rx.c-g .logo { background-image: url(assets/remax/lockup-black.png) !important; }
+.rx.c-g .nm, .rx.c-g .sub, .rx.c-g .swipe, .rx.c-g .tag { color: #000; }
+.rx.c-g .tag { border-color: #000; }
+.rx.c-g .tag.solid { background: #000; color: #fff; }
+/* break pages: Dark Blue field, red-to-red / blue-to-blue gradient type (gradients only within one Brand Color) */
+.rx.c-g.swap { --glowfill: linear-gradient(100deg, #FF1200 0%, #ff4a3a 30%, #FF1200 55%, #ff4a3a 80%, #FF1200 100%); }
+.rx.c-g.swap .logo { background-image: url(assets/remax/lockup-cream.png) !important; }
+.rx.c-g.swap .sub, .rx.c-g.swap .note3, .rx.c-g.swap .pgn3, .rx.c-g.swap .g-foot { color: var(--rx-cream); }
+.rx.c-g.swap .tag.solid { color: #fff; }
+.rx.c-g.swap { background: var(--rx-dkblue) !important; }   /* live.js paints the break ground inline */

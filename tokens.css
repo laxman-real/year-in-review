@@ -1,0 +1,38 @@
+/* Year in Review: brand tokens. Only these colours, unless Laxman adds one. */
+/* Fonts follow the LEO-pro-templates text styles: PP Telegraf Light / Regular (display, titles),
+   PP Telegraf Ultrabold (Wrapped only), Inter Regular / Light (body, labels). No other weights. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;1,400&display=block");
+@font-face { font-family: "PP Telegraf"; font-weight: 300; src: url(fonts/PPTelegraf-Light.otf); }
+@font-face { font-family: "PP Telegraf"; font-weight: 400; src: url(fonts/PPTelegraf-Regular.otf); }
+@font-face { font-family: "PP Telegraf"; font-weight: 800; src: url(fonts/PPTelegraf-Ultrabold.otf); }
+
+:root {
+  /* Palette (same five as the CMA covers, Figma Primary/* and surface-brand) */
+  --navy: #050e3d;        /* Primary/Navy Blue 900 */
+  --rezen: #4967fd;       /* Primary/ReZen Blue 900 */
+  --light: #ddebff;       /* surface/surface-brand */
+  --white: #ffffff;       /* Primary/White 900 */
+  --onyx: #1d1d1d;        /* Primary/Onyx 900 */
+  --lime: #a3e635;        /* UX/UI Utilities Lime/400: only on cover V4 (Laxman's wrapped CMA design) */
+
+  --font-display: "PP Telegraf", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* Slide: Instagram portrait carousel */
+  --slide-w: 1080px;
+  --slide-h: 1350px;
+  --margin: 72px;
+}
+
+/* Type, named after the Figma text styles (CMA/…). Family, weight, line height, tracking and case
+   come from the style; sizes are scaled up for a 1080 px social slide (set font-size per use). */
+.t-wrapped  { font-family: var(--font-display); font-weight: 800; line-height: .88; letter-spacing: -.05em; }  /* CMA/Display/Wrapped */
+.t-poster   { font-family: var(--font-display); font-weight: 300; line-height: 1;   letter-spacing: -.04em; }  /* CMA/Display/Poster */
+.t-hero     { font-family: var(--font-display); font-weight: 300; line-height: 1;   letter-spacing: -.03em; }  /* CMA/Display/Hero, Hero M */
+.t-display  { font-family: var(--font-display); font-weight: 300; line-height: 1;   letter-spacing: -.02em; }  /* CMA/Display/XL, L */
+.t-display-r{ font-family: var(--font-display); font-weight: 400; line-height: 1;   letter-spacing: -.02em; }  /* CMA/Display/XL Regular */
+.t-title    { font-family: var(--font-display); font-weight: 400; line-height: 1.4; letter-spacing: 0; }       /* CMA/Title/L, M */
+.t-body     { font-family: var(--font-body);    font-weight: 400; line-height: 1.3; }                          /* CMA/Body/L */
+.t-body-l   { font-family: var(--font-body);    font-weight: 300; line-height: 1.3; }                          /* CMA/Body/L Light */
+.t-label    { font-family: var(--font-body);    font-weight: 400; line-height: 1.2; letter-spacing: .14em; text-transform: uppercase; } /* CMA/Label/M */
+.t-label-l  { font-family: var(--font-body);    font-weight: 300; line-height: 1.2; letter-spacing: .16em; text-transform: uppercase; } /* CMA/Label/M Light */
