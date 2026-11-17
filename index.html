@@ -198,6 +198,7 @@
     .page-title { padding-left: 16px !important; }
     .version.open .version-label::after { display: none; }
   }
+  .seg[hidden] { display: none !important; }
 </style>
 </head>
 <body>
@@ -373,6 +374,8 @@
   const segBtns = [...document.querySelectorAll('.seg button')];
   segBtns.forEach(b => b.onclick = () => { if (b.dataset.k === 'color') breaks = b.dataset.v === 'bi'; else if (b.dataset.k === 'brand') brand = b.dataset.v; else noPhoto = b.dataset.v === 'off'; render(); saveHash(); });
   function syncBar(count) {
+    // Monocolor / Bicolor only matters inside a poster set (the break pages); hide it on All covers (Laxman, 17 Nov)
+    const colorSeg = document.querySelector('.seg[aria-label="Colour system"]'); if (colorSeg) colorSeg.hidden = view === 'home';
     pageSel.value = view; photoBtn.setAttribute('aria-pressed', noPhoto); segBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.k === 'color' ? String((b.dataset.v === 'bi') === breaks) : b.dataset.k === 'brand' ? String(b.dataset.v === brand) : String((b.dataset.v === 'off') === noPhoto)));
     tabs.innerHTML = VIEWS().map(v => `<button class="${v.id === view ? 'on' : ''}" data-v="${v.id}">${v.id === 'home' ? 'All' : v.label.replace(' · ', ' <em>') + '</em>'}</button>`).join('');
     tabs.querySelectorAll('button').forEach(b => b.onclick = () => go(b.dataset.v));
