@@ -1,6 +1,6 @@
 // Year in Review: Publish (poster upload). Local only: shows on localhost, never on the shared artifact.
 // Pick sets, brands, sizes, pages and reels, add a note, review the file list, upload. serve.py + publish.py render
-// the posters to JPGs and push them to the posters repo (LaxmanKshirsagar/year-in-review-posters).
+// the posters to JPGs and push them to the posters repo (laxman-real/year-in-review-posters).
 (function () {
   if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&](figma|reel)=/.test(location.search)) return;
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];

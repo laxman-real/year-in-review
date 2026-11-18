@@ -2,7 +2,7 @@
 
 The page sends a list of posters to publish. This module renders them to JPGs with tools/shoot.mjs (Kamui dev Chrome),
 copies the chosen reels, rebuilds the README gallery, and commits and pushes the posters repo
-(LaxmanKshirsagar/year-in-review-posters, cloned next to this folder as "Year in Review Posters").
+(laxman-real/year-in-review-posters, cloned next to this folder as "Year in Review Posters").
 
 Folder layout in the posters repo:
   real/poster/post/01-cover.jpg   real/poster/story/...   real/glow/...   remax/poster/...   remax/glow/...
@@ -13,7 +13,7 @@ import json, os, shutil, subprocess, threading, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR = os.path.join(os.path.dirname(HERE), 'Year in Review Posters')
-REPO_URL = 'https://github.com/LaxmanKshirsagar/year-in-review-posters'
+REPO_URL = 'https://github.com/laxman-real/year-in-review-posters'
 NODE = os.path.expanduser('~/.nvm/versions/node/v24.16.0/bin/node')
 START_CHROME = os.path.expanduser('~/Desktop/kamui/Tools/dev-chrome/start-chrome.sh')
 
