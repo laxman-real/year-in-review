@@ -6,6 +6,10 @@
   const q = new URLSearchParams(location.search), SET = q.get('figma');
   if (!SET) return;
   const STORY = q.get('fmt') === 'story', H = STORY ? 1920 : 1350, GAP = 120;
+  // &brand=remax renders the REMAX versions; &shoot is the poster-upload renderer (tools/shoot.mjs): no Figma
+  // capture script, and the grain texture stays (Figma can't take it, but the exported images should have it)
+  const RX = q.get('brand') === 'remax', SHOOT = q.has('shoot');
+  window.YIR_BRAND = RX ? 'remax' : 'real';
   function build() {
     const cover = COVERS().find(c => c.id === SET), pages = YIR.pages;
     const st = document.createElement('style');
@@ -22,10 +26,15 @@
       let cls, html;
       if (i === 0) { cls = cover.t.dataset.class; html = cover.t.innerHTML; }
       else { const g = YIR_SETS[SET](p, i, STORY); cls = g.cls + (SWAP.includes(p.id) ? ' swap' : ''); html = g.html; }
+      if (RX) { cls += ' rx'; html = html.replace(/assets\/(ill|ir|gl)-/g, 'assets/remax/$1-'); }
       const next = (pages[i + 1] || {}).name || '';
       return `<div class="fs-slide" data-name="${p.id} · ${p.name}${STORY ? ' · Story' : ''}"><section class="slide ${cls}${STORY ? ' st9' : ''}" data-page="${p.id}" data-next="${next}">${html}</section></div>`;
     }).join('');
     document.body.appendChild(sheet);
+    // ids the sheet shares with the hidden main page (e.g. the P1 petal gradient #irid): the first match in the document
+    // wins, and a gradient inside a display:none page paints nothing, so the hidden copies give up their ids
+    const ids = new Set([...sheet.querySelectorAll('[id]')].map(e => e.id));
+    document.querySelectorAll('[id]').forEach(e => { if (ids.has(e.id) && !sheet.contains(e)) e.id = e.id + '-hidden'; });
     bind(sheet);
     // the logo is a CSS mask on the page, which Figma can't import: swap in the SVG itself so it arrives as a vector
     fetch('assets/real-logo.svg').then(r => r.text()).then(svg => {
@@ -34,7 +43,7 @@
         const v = l.querySelector('svg'); if (v) { v.setAttribute('width', '100%'); v.setAttribute('height', '100%'); v.style.display = 'block'; } });
     });
     // grain canvases serialise as one big noise image per slide and push the capture past Figma's 50 MB limit
-    sheet.querySelectorAll('canvas.grain').forEach(c => c.remove());
+    if (SHOOT) { if (window.Grain) Grain.renderAll(sheet); } else sheet.querySelectorAll('canvas.grain').forEach(c => c.remove());
     if (window.Rings) Rings.renderAll(sheet);
     // Wrapped (V4): Figma can't import CSS masks or image filters, so the faded photo and art layers are baked to PNGs
     // first (?figma=V4&fmt=post&bake, scratchpad bake.mjs) and swapped in here (&baked). Each baked PNG is full-slide size.
@@ -50,7 +59,7 @@
         swapIn('.photo:not(.topic)', 'photo'); swapIn('.mg-ill', 'art');
       });
     }
-    if (q.has('bake')) return;   // bake mode: no Figma capture script
+    if (q.has('bake') || SHOOT) { window.__sheetReady = true; return; }   // bake / shoot: no Figma capture script
     // the capture script reads its settings from the hash (#figmacapture=…)
     const s = document.createElement('script'); s.src = 'https://mcp.figma.com/mcp/html-to-design/capture.js'; s.async = true; document.head.appendChild(s);
   }

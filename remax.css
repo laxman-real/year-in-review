@@ -13,7 +13,7 @@
 /* Primary logotype: Cream on colour, Black on light grounds. Same height as the Real logo, wider. */
 .rx .logo { width: 210px !important; height: 58px !important; background: url(assets/remax/lockup-cream.png) no-repeat left center / contain !important;
   -webkit-mask: none !important; mask: none !important; }
-.rx .logo > * { display: none; }
+.rx .logo > * { display: none !important; }   /* the sheet view inlines the Real logo SVG with its own display */
 
 /* ===== V4 Wrapped: Primary Blue field, Primary Red accent (sticker, extrusion), Dark Blue chips ===== */
 .rx.c-w { background: radial-gradient(circle at 12% 92%, #3d6dff 0%, rgba(61,109,255,0) 42%), radial-gradient(circle at 95% 0%, #2a5cff 0%, rgba(42,92,255,0) 40%), linear-gradient(165deg, #0043FF 0%, #0036d4 100%); }

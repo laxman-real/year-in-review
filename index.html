@@ -18,6 +18,7 @@
 <script src="mock.js" defer></script>
 <script src="reel.js" defer></script>
 <script src="figma-sheet.js" defer></script>
+<script src="publish-ui.js" defer></script>
 <style>
   * { box-sizing: border-box; margin: 0; }
   html, body { height: 100%; background: #e9ecf2; font-family: var(--font-body); color: var(--onyx); }
@@ -397,7 +398,8 @@
   }
 
   function render() {
-    window.YIR_NOPHOTO = noPhoto; window.YIR_BRAND = brand;   // read by pages.js (Wrapped: illustration pages in No photo)
+    window.YIR_NOPHOTO = noPhoto; window.YIR_BRAND = brand;
+    window.YIR_STATE = { view, brand, story };   // read by publish-ui.js   // read by pages.js (Wrapped: illustration pages in No photo)
     const covers = COVERS();
     if (view !== 'home' && !covers.some(c => c.id === view)) view = 'home';
     document.body.style.setProperty('--slide-h', isStory() ? '1920px' : '1350px');

@@ -36,7 +36,7 @@ assert n == 1, 'saveHash not found'
 # request (the handbook marks REMAX material internal: keep this link's sharing limited).
 page = page.replace('<script src="wrapped.js"></script>', '')
 # render, reel-render and Figma-capture helpers only run locally; leave them off the link (they 404 there)
-for tag in ('<script src="clock.js"></script>', '<script src="reel.js" defer></script>', '<script src="figma-sheet.js" defer></script>'):
+for tag in ('<script src="clock.js"></script>', '<script src="reel.js" defer></script>', '<script src="figma-sheet.js" defer></script>', '<script src="publish-ui.js" defer></script>'):
     assert tag in page, tag
     page = page.replace(tag, '')
 
